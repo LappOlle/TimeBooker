@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TimeBookerApi.Properties {
+namespace IdentityAuthentication.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -25,7 +25,7 @@ namespace TimeBookerApi.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("skogsmulle87@gmail.com")]
+        [global::System.Configuration.DefaultSettingValueAttribute("***************")]
         public string Email {
             get {
                 return ((string)(this["Email"]));
@@ -34,7 +34,7 @@ namespace TimeBookerApi.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Hotmail211")]
+        [global::System.Configuration.DefaultSettingValueAttribute("**************")]
         public string Password {
             get {
                 return ((string)(this["Password"]));

@@ -10,11 +10,12 @@ using System.Web.Http;
 
 namespace TimeBookerApi.Controllers
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles ="User,Admin")]
     [RoutePrefix("api/Booking")]
     public class BookingController : ApiController
     {
         // GET: api/Booking
+        [HttpGet]
         public IHttpActionResult Get(string username)
         {
             if(ModelState.IsValid)
@@ -31,22 +32,26 @@ namespace TimeBookerApi.Controllers
         }
 
         // GET: api/Booking/5
+        [HttpGet]
         public string Get(int id)
         {
             return "value";
         }
 
         // POST: api/Booking
+        [HttpPost]
         public void Post([FromBody]string value)
         {
         }
 
         // PUT: api/Booking/5
+        [HttpPut]
         public void Put(int id, [FromBody]string value)
         {
         }
 
         // DELETE: api/Booking/5
+        [HttpDelete]
         public void Delete(int id)
         {
         }

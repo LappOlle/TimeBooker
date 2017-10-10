@@ -13,7 +13,7 @@ using System.Web;
 
 namespace TimeBookerApi.Authentication.Repository
 {
-    public class UserRepository:IDisposable
+    public class UserRepository : IDisposable
     {
         private UserContext context;
         private UserManager<IdentityUser> userManager;
@@ -25,7 +25,7 @@ namespace TimeBookerApi.Authentication.Repository
             var provider = new DpapiDataProtectionProvider("TimeBooker");
 
             userManager.UserTokenProvider = new DataProtectorTokenProvider<IdentityUser>(
-                provider.Create("EmailConfirmation"));
+                provider.Create("EmailConfirmation","PasswordReset"));
 
             userManager.EmailService = new EmailService();
 
@@ -48,7 +48,7 @@ namespace TimeBookerApi.Authentication.Repository
         public async Task<IList<string>> GetUserRoles(string userId)
         {
             IList<string> roles = await userManager.GetRolesAsync(userId);
-            
+
             return roles;
         }
 
@@ -60,7 +60,7 @@ namespace TimeBookerApi.Authentication.Repository
                 Email = userModel.Email
             };
             var result = await userManager.CreateAsync(user, userModel.Password);
-            
+
             return result;
         }
 
@@ -76,7 +76,7 @@ namespace TimeBookerApi.Authentication.Repository
             var user = userManager.FindByName(userName);
             var token = await userManager.GenerateEmailConfirmationTokenAsync(user.Id);
             var callbackUrl = Properties.Settings.Default.ConfirmEmailUrl + "api/User/ConfirmEmail" + "?userID=" + user.Id + "&token=" + HttpUtility.UrlEncode(token);
-           
+
             var message = new IdentityMessage
             {
                 Subject = "Confirm your Account",
@@ -86,7 +86,28 @@ namespace TimeBookerApi.Authentication.Repository
             await userManager.EmailService.SendAsync(message);
         }
 
-        public async Task<IdentityResult> ValidateEmail(string userId,string token)
+        public async Task SendResetPasswordToken(string userName)
+        {
+            var user = userManager.FindByName(userName);
+            var token = await userManager.GeneratePasswordResetTokenAsync(user.Id);
+
+            var message = new IdentityMessage
+            {
+                Subject = "Reset Password",
+                Destination = user.Email,
+                Body = "Here is the token you should copy and past into the specified token field:" + token
+            };
+            await userManager.EmailService.SendAsync(message);
+        }
+
+        public async Task<IdentityResult> ValidatePasswordToken(string userName, string token, string newPassword)
+        {
+            var userId = context.Users.Where(u => u.UserName == userName).FirstOrDefault().Id;
+            var result = await userManager.ResetPasswordAsync(userId, token, newPassword);
+            return result;
+        }
+
+        public async Task<IdentityResult> ValidateEmail(string userId, string token)
         {
             var result = await userManager.ConfirmEmailAsync(userId, token);
             if (result.Succeeded)

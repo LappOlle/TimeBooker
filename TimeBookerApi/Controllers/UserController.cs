@@ -48,7 +48,7 @@ namespace TimeBookerApi.Controllers
             return Ok("You have succesfully created an account, check your email to confirm your account.");
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin,User")]
         [Route("ChangePassword")]
         [HttpPut]
         public async Task<IHttpActionResult>ChangePassword(UserViewModel model)
@@ -88,6 +88,42 @@ namespace TimeBookerApi.Controllers
             }
 
             return Ok("Your email is now confirmed, now you can log in.");
+        }
+
+        [AllowAnonymous]
+        [Route("ResetPassword")]
+        [HttpGet]
+        public async Task<IHttpActionResult>ResetPassword(string userName)
+        {
+            if(userName == null)
+            {
+                return BadRequest("You have not passed a username.");
+            }
+            await repo.SendResetPasswordToken(userName);
+
+            return Ok("Check for your token in your email.");
+        }
+
+        [AllowAnonymous]
+        [Route("ResetPassword")]
+        [HttpPost]
+        public async Task<IHttpActionResult> ResetPassword(UserViewModel userModel)
+        {
+            if (userModel.UserName == null || userModel.Token == null || userModel.NewPassword == null)
+            {
+                return BadRequest("You have not passed all required parameters (UserName,Token,NewPassword).");
+            }
+            
+            IdentityResult result = await repo.ValidatePasswordToken(userModel.UserName, userModel.Token, userModel.NewPassword);
+
+            IHttpActionResult errorResult = GetErrorResult(result);
+
+            if (errorResult != null)
+            {
+                return errorResult;
+            }
+
+            return Ok("Your new password is saved, now you can log in.");
         }
 
         private IHttpActionResult GetErrorResult(IdentityResult result)

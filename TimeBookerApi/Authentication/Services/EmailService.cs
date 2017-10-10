@@ -31,24 +31,39 @@ namespace TimeBookerApi.Authentication.Services
 
         public Task SendAsync(IdentityMessage message)
         {
+            MailMessage messageToSend;
             try
             {
-                #region formatter
-                string text = string.Format("Please click on this link to {0}: {1}", message.Subject, message.Body);
-                string html = "Please confirm your account by clicking this link: <a href=\"" + message.Body + "\">link</a><br/>";
-
-                html += HttpUtility.HtmlEncode(@"Or copy the following link to the browser:" + message.Body);
-                #endregion
-
-                var messageToSend = new MailMessage
+                if (message.Subject == "Reset Password")
                 {
-                    From = new MailAddress(Properties.Settings.Default.Email, "TimeBooker"),
-                    To = { message.Destination },
-                    Subject = message.Subject,
-                };
-                messageToSend.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(text, null, MediaTypeNames.Text.Plain));
-                messageToSend.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(html, null, MediaTypeNames.Text.Html));
-                client.Send(messageToSend);
+                    messageToSend = new MailMessage
+                    {
+                        From = new MailAddress(Properties.Settings.Default.Email, "TimeBooker"),
+                        To = { message.Destination },
+                        Subject = message.Subject,
+                        Body = message.Body
+                    };
+                    client.Send(messageToSend);
+                }
+                else
+                {
+                    #region formatter
+                    string text = string.Format("Please click on this link to {0}: {1}", message.Subject, message.Body);
+                    string html = "Please confirm your account by clicking this link: <a href=\"" + message.Body + "\">link</a><br/>";
+
+                    html += HttpUtility.HtmlEncode(@"Or copy the following link to the browser:" + message.Body);
+                    #endregion
+
+                    messageToSend = new MailMessage
+                    {
+                        From = new MailAddress(Properties.Settings.Default.Email, "TimeBooker"),
+                        To = { message.Destination },
+                        Subject = message.Subject,
+                    };
+                    messageToSend.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(text, null, MediaTypeNames.Text.Plain));
+                    messageToSend.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(html, null, MediaTypeNames.Text.Html));
+                    client.Send(messageToSend);
+                }
             }
             catch (Exception e)
             {
