@@ -25,7 +25,7 @@ namespace IdentityAuthentication.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("***************")]
+        [global::System.Configuration.DefaultSettingValueAttribute("*************")]
         public string Email {
             get {
                 return ((string)(this["Email"]));
@@ -34,7 +34,7 @@ namespace IdentityAuthentication.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("**************")]
+        [global::System.Configuration.DefaultSettingValueAttribute("*************")]
         public string Password {
             get {
                 return ((string)(this["Password"]));
