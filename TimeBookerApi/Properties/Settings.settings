@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="IdentityAuthentication.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Email" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">skogsmulle87@gmail.com</Value>
+    </Setting>
+    <Setting Name="Password" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Hotmail211</Value>
+    </Setting>
+    <Setting Name="ConfirmEmailUrl" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:57904/</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
