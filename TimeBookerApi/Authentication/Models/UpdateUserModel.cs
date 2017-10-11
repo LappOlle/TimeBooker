@@ -19,7 +19,7 @@ namespace TimeBookerApi.Authentication.Models
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm New Password")]
-        [Compare("NewPassword", ErrorMessage = "The password and confirmation password don't match.")]
+        [Compare("NewPassword", ErrorMessage = "The password and confirmation password doesn't match.")]
         public string ConfirmNewPassword { get; set; }
 
         public string Token { get; set; }

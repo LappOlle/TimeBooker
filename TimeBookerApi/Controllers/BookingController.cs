@@ -15,7 +15,7 @@ namespace TimeBookerApi.Controllers
     [RoutePrefix("api/Booking")]
     public class BookingController : ApiController
     {
-        // GET: api/Booking
+        // GET: api/Booking/userName
         [HttpGet]
         public IHttpActionResult Get(string username)
         {
@@ -67,7 +67,7 @@ namespace TimeBookerApi.Controllers
             return Ok("You have successfully saved the booking.");
         }
 
-        // PUT: api/Booking/5
+        // PUT: api/Booking/
         [HttpPut]
         public IHttpActionResult Put([FromBody]TimeBooking booking)
         {
@@ -131,15 +131,27 @@ namespace TimeBookerApi.Controllers
             return Ok("You have successfully deleted the booking.");
         }
 
+        /// <summary>
+        /// Help method to check if it's the same user that requesting data as the owner to the bookings. 
+        /// It also checks if it's Admin that requesting the data. Admin has access to all data.
+        /// </summary>
+        /// <param name="userName">pass the userName you want bookings from.</param>
+        /// <returns>Returns true if it's the same active user as the passed userName or if it's admin.</returns>
         private bool CheckIfAuthorized(string userName)
         {
-            if (HttpContext.Current.User.Identity.Name == userName || HttpContext.Current.User.Identity.Name == "Administrator")
+            if (HttpContext.Current.User.Identity.Name == userName || HttpContext.Current.User.IsInRole("Admin"))
             {
                 return true;
             }
             else { return false; }
         }
 
+        /// <summary>
+        /// Overloaded Help method to check if it's the same user that requesting data as the owner to the bookingID. 
+        /// It also checks if it's Admin that requesting the data. Admin has access to all data.
+        /// </summary>
+        /// <param name="bookingID">Pass the booking id that is requested.</param>
+        /// <returns>Returns true if it's the same active user as the owner to the passed bookingID or if it's admin.</returns>
         private bool CheckIfAuthorized(int bookingID)
         {
             TimeBooking booking;
@@ -147,7 +159,7 @@ namespace TimeBookerApi.Controllers
             {
                 booking = con.Bookings.Where(b => b.Id == bookingID).FirstOrDefault();
             }
-            if (HttpContext.Current.User.Identity.Name == booking.UserName || HttpContext.Current.User.Identity.Name == "Administrator")
+            if (HttpContext.Current.User.Identity.Name == booking.UserName || HttpContext.Current.User.IsInRole("Admin"))
             {
                 return true;
             }

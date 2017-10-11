@@ -107,14 +107,14 @@ namespace TimeBookerApi.Controllers
         [AllowAnonymous]
         [Route("ResetPassword")]
         [HttpPost]
-        public async Task<IHttpActionResult> ResetPassword(string UserName,string Token,[FromBody]string NewPassword)
+        public async Task<IHttpActionResult> ResetPassword(string userName,string token,[FromBody]string newPassword)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             
-            IdentityResult result = await repo.ValidatePasswordToken(UserName, Token, NewPassword);
+            IdentityResult result = await repo.ValidatePasswordToken(userName, token, newPassword);
 
             IHttpActionResult errorResult = GetErrorResult(result);
 
@@ -126,6 +126,11 @@ namespace TimeBookerApi.Controllers
             return Ok("Your new password is saved, now you can log in.");
         }
 
+        /// <summary>
+        /// Method to help adding errors to ModelState.
+        /// </summary>
+        /// <param name="result">Pass the IdentityResult before you send the response to the client.</param>
+        /// <returns>Returns a error if there is any else it returns null.</returns>
         private IHttpActionResult GetErrorResult(IdentityResult result)
         {
             if (result == null)
@@ -145,7 +150,6 @@ namespace TimeBookerApi.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    // No ModelState errors are available to send, so just return an empty BadRequest.
                     return BadRequest();
                 }
 
@@ -154,6 +158,7 @@ namespace TimeBookerApi.Controllers
 
             return null;
         }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

@@ -14,28 +14,9 @@ namespace TimeBookerApi.Migrations
             AutomaticMigrationsEnabled = true;
         }
 
-        protected override void Seed(TimeBookerApi.Authentication.Context.UserContext context)
+        protected override void Seed(Authentication.Context.UserContext context)
         {
-            //if (!context.Roles.Any(r => r.Name == "Admin"))
-            //{
-            //    var store = new RoleStore<IdentityRole>(context);
-            //    var manager = new RoleManager<IdentityRole>(store);
-            //    var role = new IdentityRole { Name = "Admin" };
-
-            //    manager.Create(role);
-            //}
-
-            //if (!context.Users.Any(u => u.UserName == "Administrator"))
-            //{
-            //    var store = new UserStore<IdentityUser>(context);
-            //    var manager = new UserManager<IdentityUser>(store);
-            //    var user = new IdentityUser { UserName = "Administrator"};
-
-            //    manager.Create(user, "Admin12345");
-            //    manager.AddToRole(user.Id, "Admin");
-            //}
-
-            //Step 1 Create the user.
+            //Step 1 Create the admin user.
             var passwordHasher = new PasswordHasher();
             var user = new IdentityUser("Administrator");
             user.PasswordHash = passwordHasher.HashPassword("Admin12345");
@@ -56,7 +37,6 @@ namespace TimeBookerApi.Migrations
             //Step 4 Add the role row and add the user to DB)
             user.Roles.Add(role);
             context.Users.Add(user);
-
         }
     }
 }

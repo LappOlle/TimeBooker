@@ -25,7 +25,16 @@ namespace TimeBookerApi.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("*************")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:57904/")]
+        public string ConfirmEmailUrl {
+            get {
+                return ((string)(this["ConfirmEmailUrl"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("************")]
         public string Email {
             get {
                 return ((string)(this["Email"]));
@@ -38,15 +47,6 @@ namespace TimeBookerApi.Properties {
         public string Password {
             get {
                 return ((string)(this["Password"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:57904/")]
-        public string ConfirmEmailUrl {
-            get {
-                return ((string)(this["ConfirmEmailUrl"]));
             }
         }
     }

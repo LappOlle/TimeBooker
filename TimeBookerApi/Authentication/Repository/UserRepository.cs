@@ -24,17 +24,21 @@ namespace TimeBookerApi.Authentication.Repository
             userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(context));
             var provider = new DpapiDataProtectionProvider("TimeBooker");
 
+            //Setting up what token provider i use. "Owin"
             userManager.UserTokenProvider = new DataProtectorTokenProvider<IdentityUser>(
                 provider.Create("EmailConfirmation","PasswordReset"));
 
+            //Setting the EmailService to my own custom emailservice.
             userManager.EmailService = new EmailService();
 
+            //Setting up rules for validation of user.
             userManager.UserValidator = new UserValidator<IdentityUser>(userManager)
             {
                 AllowOnlyAlphanumericUserNames = true,
                 RequireUniqueEmail = true
             };
 
+            //Setting up rules for validation of password.
             userManager.PasswordValidator = new PasswordValidator
             {
                 RequiredLength = 6,
@@ -45,13 +49,22 @@ namespace TimeBookerApi.Authentication.Repository
             };
         }
 
+        /// <summary>
+        /// Method to check what roles a user have from DB.
+        /// </summary>
+        /// <param name="userId">Pass the userId.</param>
+        /// <returns>Returns a list of all the roles.</returns>
         public async Task<IList<string>> GetUserRoles(string userId)
         {
             IList<string> roles = await userManager.GetRolesAsync(userId);
-
             return roles;
         }
 
+        /// <summary>
+        /// Method to register a new user.
+        /// </summary>
+        /// <param name="userModel">Pass a valid userModel.</param>
+        /// <returns>Returns a IdentityResult which contains either succeeded or an errorResult.</returns>
         public async Task<IdentityResult> RegisterUser(User userModel)
         {
             IdentityUser user = new IdentityUser
@@ -60,17 +73,26 @@ namespace TimeBookerApi.Authentication.Repository
                 Email = userModel.Email
             };
             var result = await userManager.CreateAsync(user, userModel.Password);
-
             return result;
         }
 
-        public async Task<IdentityResult> ChangePassword(UpdateUserModel userViewModel)
+        /// <summary>
+        /// Method to Change Password.
+        /// </summary>
+        /// <param name="updateUserModel">Pass a valid updateUserModel.</param>
+        /// <returns>Returns a IdentityResult which contains either succeeded or an errorResult.</returns>
+        public async Task<IdentityResult> ChangePassword(UpdateUserModel updateUserModel)
         {
-            var userId = context.Users.Where(u => u.UserName == userViewModel.User.UserName).FirstOrDefault().Id;
-            var result = await userManager.ChangePasswordAsync(userId, userViewModel.User.Password, userViewModel.NewPassword);
+            var userId = context.Users.Where(u => u.UserName == updateUserModel.User.UserName).FirstOrDefault().Id;
+            var result = await userManager.ChangePasswordAsync(userId, updateUserModel.User.Password, updateUserModel.NewPassword);
             return result;
         }
 
+        /// <summary>
+        /// Method to send ConfirmationEmail to the registered email.
+        /// </summary>
+        /// <param name="userName">Pass a valid userName.</param>
+        /// <returns></returns>
         public async Task SendConfirmationEmail(string userName)
         {
             var user = userManager.FindByName(userName);
@@ -86,6 +108,12 @@ namespace TimeBookerApi.Authentication.Repository
             await userManager.EmailService.SendAsync(message);
         }
 
+        /// <summary>
+        /// Method to reset password and send a reset token to the registered email.
+        /// ***IMPORTANT***We have to set subject in the IdentityMessage to "Reset Password" for send the token.
+        /// </summary>
+        /// <param name="userName">Pass a valid userName.</param>
+        /// <returns></returns>
         public async Task SendResetPasswordToken(string userName)
         {
             var user = userManager.FindByName(userName);
@@ -100,6 +128,13 @@ namespace TimeBookerApi.Authentication.Repository
             await userManager.EmailService.SendAsync(message);
         }
 
+        /// <summary>
+        /// Method to validate the reset password token and set a new password for the specified user.
+        /// </summary>
+        /// <param name="userName">Pass a valid userName.</param>
+        /// <param name="token">Pass a valid token (from the email).</param>
+        /// <param name="newPassword">Pass a valid new password.</param>
+        /// <returns>Returns a IdentityResult which contains either succeeded or an errorResult.</returns>
         public async Task<IdentityResult> ValidatePasswordToken(string userName, string token, string newPassword)
         {
             var userId = context.Users.Where(u => u.UserName == userName).FirstOrDefault().Id;
@@ -107,6 +142,12 @@ namespace TimeBookerApi.Authentication.Repository
             return result;
         }
 
+        /// <summary>
+        /// Method to validate the confirm email token. Before the email is confirmed user can't login.
+        /// </summary>
+        /// <param name="userId">Pass a valid userId.</param>
+        /// <param name="token">Pass a valid token.</param>
+        /// <returns>Returns a IdentityResult which contains either succeeded or an errorResult.</returns>
         public async Task<IdentityResult> ValidateEmail(string userId, string token)
         {
             var result = await userManager.ConfirmEmailAsync(userId, token);
@@ -121,13 +162,21 @@ namespace TimeBookerApi.Authentication.Repository
             return result;
         }
 
+        /// <summary>
+        /// Method to check if there is a user with the specified userName and password.
+        /// </summary>
+        /// <param name="userName">Pass a valid userName.</param>
+        /// <param name="password">Pass a valid password.</param>
+        /// <returns>Returns a IdentityUser if there is any with the specified credentials.</returns>
         public async Task<IdentityUser> FindUser(string userName, string password)
         {
             IdentityUser user = await userManager.FindAsync(userName, password);
             return user;
-
         }
 
+        /// <summary>
+        /// Method to Dispose the db and usermanager.
+        /// </summary>
         public void Dispose()
         {
             context.Dispose();
