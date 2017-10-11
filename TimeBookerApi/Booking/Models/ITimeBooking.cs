@@ -8,7 +8,7 @@ namespace TimeBookerApi.Booking.Models
 {
     public interface ITimeBooking
     {
-        int Id { get; set; }
+        int? Id { get; set; }
         DateTime From { get; set; }
         DateTime To { get; set; }
         string UserName { get; set; }

@@ -64,10 +64,10 @@ namespace TimeBookerApi.Authentication.Repository
             return result;
         }
 
-        public async Task<IdentityResult> ChangePassword(UserViewModel userViewModel)
+        public async Task<IdentityResult> ChangePassword(UpdateUserModel userViewModel)
         {
-            var userId = context.Users.Where(u => u.UserName == userViewModel.UserName).FirstOrDefault().Id;
-            var result = await userManager.ChangePasswordAsync(userId, userViewModel.Password, userViewModel.NewPassword);
+            var userId = context.Users.Where(u => u.UserName == userViewModel.User.UserName).FirstOrDefault().Id;
+            var result = await userManager.ChangePasswordAsync(userId, userViewModel.User.Password, userViewModel.NewPassword);
             return result;
         }
 
@@ -90,7 +90,7 @@ namespace TimeBookerApi.Authentication.Repository
         {
             var user = userManager.FindByName(userName);
             var token = await userManager.GeneratePasswordResetTokenAsync(user.Id);
-
+            token = HttpUtility.UrlEncode(token);
             var message = new IdentityMessage
             {
                 Subject = "Reset Password",

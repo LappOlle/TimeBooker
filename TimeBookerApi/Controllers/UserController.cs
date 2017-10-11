@@ -32,7 +32,7 @@ namespace TimeBookerApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
+            
             IdentityResult result = await repo.RegisterUser(userModel);
             if (result.Succeeded)
             {
@@ -51,7 +51,7 @@ namespace TimeBookerApi.Controllers
         [Authorize(Roles = "Admin,User")]
         [Route("ChangePassword")]
         [HttpPut]
-        public async Task<IHttpActionResult>ChangePassword(UserViewModel model)
+        public async Task<IHttpActionResult>ChangePassword(UpdateUserModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -107,14 +107,14 @@ namespace TimeBookerApi.Controllers
         [AllowAnonymous]
         [Route("ResetPassword")]
         [HttpPost]
-        public async Task<IHttpActionResult> ResetPassword(UserViewModel userModel)
+        public async Task<IHttpActionResult> ResetPassword(string UserName,string Token,[FromBody]string NewPassword)
         {
-            if (userModel.UserName == null || userModel.Token == null || userModel.NewPassword == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("You have not passed all required parameters (UserName,Token,NewPassword).");
+                return BadRequest(ModelState);
             }
             
-            IdentityResult result = await repo.ValidatePasswordToken(userModel.UserName, userModel.Token, userModel.NewPassword);
+            IdentityResult result = await repo.ValidatePasswordToken(UserName, Token, NewPassword);
 
             IHttpActionResult errorResult = GetErrorResult(result);
 

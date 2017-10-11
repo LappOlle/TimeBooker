@@ -38,7 +38,7 @@ namespace TimeBookerApi.Authentication.Providers
                     return;
                 }
                 var identity = new ClaimsIdentity(context.Options.AuthenticationType);
-                identity.AddClaim(new Claim("sub", context.UserName)); //"sub" = the identity of the user, we put it as the username.
+                identity.AddClaim(new Claim(ClaimTypes.Name, context.UserName)); 
                 var roles = await repo.GetUserRoles(user.Id); //Checking for all the roles from db.
 
                 foreach (var role in roles)//Adding all the roles, It will be inside the accesstoken.

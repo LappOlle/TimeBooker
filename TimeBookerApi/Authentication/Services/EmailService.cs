@@ -53,7 +53,7 @@ namespace TimeBookerApi.Authentication.Services
 
                     html += HttpUtility.HtmlEncode(@"Or copy the following link to the browser:" + message.Body);
                     #endregion
-
+                    
                     messageToSend = new MailMessage
                     {
                         From = new MailAddress(Properties.Settings.Default.Email, "TimeBooker"),

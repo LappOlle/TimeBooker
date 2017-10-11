@@ -128,7 +128,7 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Authentication\Context\UserContext.cs" />
-    <Compile Include="Authentication\Models\UserViewModel.cs" />
+    <Compile Include="Authentication\Models\UpdateUserModel.cs" />
     <Compile Include="Authentication\Services\EmailService.cs" />
     <Compile Include="Authentication\Models\User.cs" />
     <Compile Include="Authentication\Providers\MyAuthorizationServerProvider.cs" />
