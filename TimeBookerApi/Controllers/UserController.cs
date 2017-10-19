@@ -9,6 +9,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.IO;
+using RazorEngine;
+using System.Net.Http.Headers;
 
 namespace TimeBookerApi.Controllers
 {
@@ -71,11 +74,16 @@ namespace TimeBookerApi.Controllers
         [AllowAnonymous]
         [Route("ConfirmEmail")]
         [HttpGet]
-        public async Task<IHttpActionResult> ConfirmEmail(string userID, string token)
+        public async Task<HttpResponseMessage> ConfirmEmail(string userID, string token)
         {
+            dynamic model = new { Name = HttpContext.Current.User.Identity.Name };
+            HttpResponseMessage responseMessage;
+
             if (userID == null || token == null)
             {
-                return BadRequest("You may have changed the url in the confirmation link, please try again.");
+                responseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                return responseMessage;
+                
             }
 
             IdentityResult result = await repo.ValidateEmail(userID,  token);
@@ -84,10 +92,16 @@ namespace TimeBookerApi.Controllers
 
             if (errorResult != null)
             {
-                return errorResult;
+                responseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                return responseMessage;
             }
-
-            return Ok("Your email is now confirmed, now you can log in.");
+            responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
+            string viewPath = HttpContext.Current.Server.MapPath(@"~/MessageViews/ViewEmailMessage.cshtml");
+            var template = File.ReadAllText(viewPath);
+            string parsedView = Razor.Parse(template,model);
+            responseMessage.Content = new StringContent(parsedView);
+            responseMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
+            return responseMessage;
         }
 
         [AllowAnonymous]

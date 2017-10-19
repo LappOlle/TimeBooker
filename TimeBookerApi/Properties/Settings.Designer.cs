@@ -25,28 +25,10 @@ namespace TimeBookerApi.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:57904/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://tangjaiapi.azurewebsites.net/")]
         public string ConfirmEmailUrl {
             get {
                 return ((string)(this["ConfirmEmailUrl"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("************")]
-        public string Email {
-            get {
-                return ((string)(this["Email"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("************")]
-        public string Password {
-            get {
-                return ((string)(this["Password"]));
             }
         }
     }

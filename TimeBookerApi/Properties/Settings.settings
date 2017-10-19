@@ -3,13 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="ConfirmEmailUrl" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">http://localhost:57904/</Value>
-    </Setting>
-    <Setting Name="Email" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">************</Value>
-    </Setting>
-    <Setting Name="Password" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">************</Value>
+      <Value Profile="(Default)">http://tangjaiapi.azurewebsites.net/</Value>
     </Setting>
   </Settings>
 </SettingsFile>

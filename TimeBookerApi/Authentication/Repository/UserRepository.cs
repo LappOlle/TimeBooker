@@ -47,6 +47,11 @@ namespace TimeBookerApi.Authentication.Repository
                 RequireLowercase = true,
                 RequireUppercase = true,
             };
+
+            //Enable UserLockOut And setting up the rules.
+            userManager.UserLockoutEnabledByDefault = true;
+            userManager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            userManager.MaxFailedAccessAttemptsBeforeLockout = 5;
         }
 
         /// <summary>

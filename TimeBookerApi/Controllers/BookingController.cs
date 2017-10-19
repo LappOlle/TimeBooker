@@ -17,38 +17,65 @@ namespace TimeBookerApi.Controllers
     {
         // GET: api/Booking/userName
         [HttpGet]
-        public IHttpActionResult Get(string username)
+        public IHttpActionResult Get()
         {
-            if (!CheckIfAuthorized(username))
-            {
-                return BadRequest("You are not authorized to look at other user bookings.");
-            }
+            var requestingUsername = HttpContext.Current.User.Identity.Name;//We take the username from the token.
 
-            else if (ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 List<TimeBooking> bookings = new List<TimeBooking>();
-                using (var con = new BookingContext())
+
+                //If it's admin return all the bookings with all data.
+                if (requestingUsername == "Administrator")
                 {
-                    bookings.AddRange(con.Bookings.Where(b => b.UserName == username).ToList());
+                    using (var con = new BookingContext())
+                    {
+                        bookings.AddRange(con.Bookings.ToList());
+                    }
+                }
+
+                /*Else when it's a user we only return all data in the booking when user is the owner
+                 else we only give data about the booking datetime (From, To).*/
+                else
+                {
+                    using (var con = new BookingContext())
+                    {
+                        foreach (var booking in con.Bookings.ToList())
+                        {
+                            if (booking.UserName == requestingUsername)
+                            {
+                                bookings.Add(booking);
+                            }
+                            else
+                            {
+                                bookings.Add(new TimeBooking()
+                                {
+                                    From = booking.From,
+                                    To = booking.To
+                                });
+                            }
+                        }
+                    }
                 }
                 return Ok(bookings);
             }
             return BadRequest();
-
         }
 
         // POST: api/Booking
         [HttpPost]
         public IHttpActionResult Post([FromBody]TimeBooking booking)
         {
-            if (!CheckIfAuthorized(booking.UserName))
+            if (!isBookingHaveEverythingExceptUsername(booking))
             {
-                return BadRequest("You are not authorized to save bookings for other users.");
+                return BadRequest(ModelState);
             }
+
             try
             {
-                if (ModelState.IsValid)
+                if (booking.UserName != null && HttpContext.Current.User.IsInRole("Admin"))
                 {
+
                     using (var con = new BookingContext())
                     {
                         con.Bookings.Add(booking);
@@ -57,7 +84,12 @@ namespace TimeBookerApi.Controllers
                 }
                 else
                 {
-                    return BadRequest(ModelState);
+                    using (var con = new BookingContext())
+                    {
+                        booking.UserName = HttpContext.Current.User.Identity.Name;
+                        con.Bookings.Add(booking);
+                        con.SaveChanges();
+                    }
                 }
             }
             catch (Exception)
@@ -71,31 +103,40 @@ namespace TimeBookerApi.Controllers
         [HttpPut]
         public IHttpActionResult Put([FromBody]TimeBooking booking)
         {
-            if (!CheckIfAuthorized(booking.UserName))
+            if (ModelState.IsValid)
             {
-                return BadRequest("You are not authorized to change bookings for other users.");
-            }
-            try
-            {
-                if (ModelState.IsValid)
+                try
                 {
                     using (var con = new BookingContext())
                     {
                         var bookingToReplace = con.Bookings.Where(b => b.Id == booking.Id).FirstOrDefault();
-                        con.Bookings.Remove(bookingToReplace);
-                        con.Bookings.Add(booking);
-                        con.SaveChanges();
+
+                        if (bookingToReplace != null)
+                        {
+                            bookingToReplace.Location = booking.Location;
+                            bookingToReplace.Title = booking.Title;
+                            bookingToReplace.Details = booking.Details;
+                            bookingToReplace.From = booking.From;
+                            bookingToReplace.To = booking.To;
+                            bookingToReplace.UserName = booking.UserName;
+                            con.SaveChanges();
+                        }
+                        else
+                        {
+                            return NotFound();
+                        }
                     }
                 }
-                else
+                catch (Exception)
                 {
-                    return BadRequest(ModelState);
+                    return InternalServerError();
                 }
             }
-            catch (Exception)
+            else
             {
-                return InternalServerError();
+                return BadRequest(ModelState);
             }
+
             return Ok("You have successfully changed the booking.");
         }
 
@@ -132,23 +173,8 @@ namespace TimeBookerApi.Controllers
         }
 
         /// <summary>
-        /// Help method to check if it's the same user that requesting data as the owner to the bookings. 
-        /// It also checks if it's Admin that requesting the data. Admin has access to all data.
-        /// </summary>
-        /// <param name="userName">pass the userName you want bookings from.</param>
-        /// <returns>Returns true if it's the same active user as the passed userName or if it's admin.</returns>
-        private bool CheckIfAuthorized(string userName)
-        {
-            if (HttpContext.Current.User.Identity.Name == userName || HttpContext.Current.User.IsInRole("Admin"))
-            {
-                return true;
-            }
-            else { return false; }
-        }
-
-        /// <summary>
-        /// Overloaded Help method to check if it's the same user that requesting data as the owner to the bookingID. 
-        /// It also checks if it's Admin that requesting the data. Admin has access to all data.
+        /// Help method to check if it's the same user that requesting to delete data as the owner to the bookingID. 
+        /// It also checks if it's Admin that requesting to delete the data. Admin has access to delete all data.
         /// </summary>
         /// <param name="bookingID">Pass the booking id that is requested.</param>
         /// <returns>Returns true if it's the same active user as the owner to the passed bookingID or if it's admin.</returns>
@@ -164,6 +190,18 @@ namespace TimeBookerApi.Controllers
                 return true;
             }
             else { return false; }
+        }
+
+        private bool isBookingHaveEverythingExceptUsername(TimeBooking bookingToCheck)
+        {
+            if (bookingToCheck.To != null && bookingToCheck.From != null && bookingToCheck.Title != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

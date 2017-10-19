@@ -18,6 +18,7 @@ namespace TimeBookerApi.Authentication.Services
 
         public EmailService()
         {
+            
             //Setting up SmtpClient for use of my gmail account.
             client = new SmtpClient
             {
