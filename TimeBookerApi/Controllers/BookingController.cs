@@ -136,7 +136,6 @@ namespace TimeBookerApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             return Ok("You have successfully changed the booking.");
         }
 

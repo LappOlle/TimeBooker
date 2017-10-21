@@ -43,7 +43,7 @@ namespace TimeBookerApi
             {
                 AllowInsecureHttp = true,
                 TokenEndpointPath = new PathString("/token"),
-                AccessTokenExpireTimeSpan = TimeSpan.FromHours(5),
+                AccessTokenExpireTimeSpan = TimeSpan.FromHours(1),
                 Provider = new MyAuthorizationServerProvider()
             };
 

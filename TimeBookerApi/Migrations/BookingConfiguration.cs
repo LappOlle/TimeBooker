@@ -17,7 +17,7 @@ namespace TimeBookerApi.Migrations
         {
             var booking = new TimeBooking();
             booking.From = DateTime.Now;
-            booking.To = DateTime.Now.AddDays(3);
+            booking.To = DateTime.Now.AddMinutes(30);
             booking.Title = "Möte";
             booking.Location = "Mellansel framtidens hus.";
             booking.Details = "Möte där vi ska diskutera hanteringen utav ogräs i byns rabatter";

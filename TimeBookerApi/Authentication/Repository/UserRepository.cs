@@ -145,7 +145,7 @@ namespace TimeBookerApi.Authentication.Repository
         }
 
         /// <summary>
-        /// Method to validate the confirm email token. Before the email is confirmed user can't login.
+        /// Method to validate the confirm email token and give them a user role. Before the email is confirmed user can't login.
         /// </summary>
         /// <param name="userId">Pass a valid userId.</param>
         /// <param name="token">Pass a valid token.</param>

@@ -42,7 +42,7 @@ namespace TimeBookerApi.Authentication.Providers
                     return;
                 }
                 /*If everthing went fine in the validation above we adding Claims to a ClaimsIdentity "The bearer token for the user"
-                 And give the IdentityClaim a Name same as the requesting username. That makes it very easy to validate who the
+                 And give the ClaimIdentity a Name same as the requesting username. That makes it very easy to validate who the
                  requesting user is in the BookingController with the method "HttpContext.Current.User.Identity.Name == userName" */
                 var identity = new ClaimsIdentity(context.Options.AuthenticationType);
                 identity.AddClaim(new Claim(ClaimTypes.Name, context.UserName)); 
