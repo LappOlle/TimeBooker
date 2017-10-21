@@ -37,17 +37,12 @@ namespace TimeBookerApi.Controllers
             }
             
             IdentityResult result = await repo.RegisterUser(userModel);
-            if (result.Succeeded)
-            {
-                await repo.SendConfirmationEmail(userModel.UserName);
-            }
             IHttpActionResult errorResult = GetErrorResult(result);
-
             if (errorResult != null)
             {
                 return errorResult;
             }
-
+            await repo.SendConfirmationEmail(userModel.UserName);
             return Ok("You have succesfully created an account, check your email to confirm your account.");
         }
 

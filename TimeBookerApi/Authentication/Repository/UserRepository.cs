@@ -22,11 +22,8 @@ namespace TimeBookerApi.Authentication.Repository
         {
             context = new UserContext();
             userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(context));
-            var provider = new DpapiDataProtectionProvider("TimeBooker");
-
-            //Setting up what token provider i use. "Owin"
-            userManager.UserTokenProvider = new DataProtectorTokenProvider<IdentityUser>(
-                provider.Create("EmailConfirmation","PasswordReset"));
+            var provider = Startup.DataProtectionProvider;
+            userManager.UserTokenProvider = new DataProtectorTokenProvider<IdentityUser>(provider.Create("Email Tokens"));
 
             //Setting the EmailService to my own custom emailservice.
             userManager.EmailService = new EmailService();
@@ -75,7 +72,7 @@ namespace TimeBookerApi.Authentication.Repository
             IdentityUser user = new IdentityUser
             {
                 UserName = userModel.UserName,
-                Email = userModel.Email
+                Email = userModel.Email,
             };
             var result = await userManager.CreateAsync(user, userModel.Password);
             return result;
@@ -102,11 +99,11 @@ namespace TimeBookerApi.Authentication.Repository
         {
             var user = userManager.FindByName(userName);
             var token = await userManager.GenerateEmailConfirmationTokenAsync(user.Id);
-            var callbackUrl = Properties.Settings.Default.ConfirmEmailUrl + "api/User/ConfirmEmail" + "?userID=" + user.Id + "&token=" + HttpUtility.UrlEncode(token);
+            var callbackUrl = "http://tangjaiapi.azurewebsites.net/api/User/ConfirmEmail" + "?userID=" + user.Id + "&token=" + HttpUtility.UrlEncode(token);
 
             var message = new IdentityMessage
             {
-                Subject = "Confirm your Account",
+                Subject = "Confirm your email",
                 Destination = user.Email,
                 Body = callbackUrl
             };
@@ -128,7 +125,7 @@ namespace TimeBookerApi.Authentication.Repository
             {
                 Subject = "Reset Password",
                 Destination = user.Email,
-                Body = "Here is the token you should copy and past into the specified token field:" + token
+                Body = "Here is the token, you have to copy and past into the specified token field:" + token
             };
             await userManager.EmailService.SendAsync(message);
         }

@@ -8,28 +8,23 @@ using System.Net.Mail;
 using System.Net;
 using System.Text;
 using System.Net.Mime;
+using SendGrid;
+using System.Net.Configuration;
+using Microsoft.Azure.KeyVault;
+using SendGrid.Helpers.Mail;
 
 namespace TimeBookerApi.Authentication.Services
 {
     //I'm using the IIdentityMessageService interface so i can register this as an EmailService to the UserManager.
     public class EmailService : IIdentityMessageService
     {
-        SmtpClient client;
-
+        string apiKey;
+        SendGridClient gridClient;
+        
         public EmailService()
         {
-            
-            //Setting up SmtpClient for use of my gmail account.
-            client = new SmtpClient
-            {
-                Host = "Smtp.Gmail.com",
-                Port = 587,
-                EnableSsl = true,
-                Timeout = 10000,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(Properties.Settings.Default.Email, Properties.Settings.Default.Password)
-            };
+            apiKey = Environment.GetEnvironmentVariable("SENDGRID_APIKEY");
+            gridClient = new SendGridClient(apiKey);
         }
 
         /// <summary>
@@ -40,44 +35,43 @@ namespace TimeBookerApi.Authentication.Services
         /// <param name="message">Pass a valid IdentityMessage. 
         /// Set Subject to "Reset Password" if it's a reset password token you want to send.</param>
         /// <returns></returns>
-        public Task SendAsync(IdentityMessage message)
+        public async Task SendAsync(IdentityMessage message)
         {
-            MailMessage messageToSend;
+            Response response = null;
             try
             {
                 if (message.Subject == "Reset Password")
                 {
-                    messageToSend = new MailMessage
+                    var msg = new SendGridMessage()
                     {
-                        From = new MailAddress(Properties.Settings.Default.Email, "TimeBooker"),
-                        To = { message.Destination },
+                        From = new EmailAddress("support@timebooker.se", "Support"),
                         Subject = message.Subject,
-                        Body = message.Body
+                        PlainTextContent = message.Body,
+                        HtmlContent = "<strong>" + message.Body + "</strong>"
                     };
-                    client.Send(messageToSend);
+                    msg.AddTo(new EmailAddress(message.Destination));
+                    response = await gridClient.SendEmailAsync(msg);
                 }
                 else
                 {
-                    string text = string.Format("Please click on this link to {0}: {1}", message.Subject, message.Body);
-                    string html = "Please confirm your account by clicking this link: <a href=\"" + message.Body + "\">link</a><br/>";
-                    html += HttpUtility.HtmlEncode(@"or copy the following link to the browser:" + message.Body);
+                    string text = string.Format("Click on this link to {0}: {1}", message.Subject, message.Body);
+                    string html = "Confirm your email by clicking this link: <a href=\"" + message.Body + "\">Confirm Email</a><br/>";
 
-                    messageToSend = new MailMessage
+                    var msg = new SendGridMessage()
                     {
-                        From = new MailAddress(Properties.Settings.Default.Email, "TimeBooker"),
-                        To = { message.Destination },
+                        From = new EmailAddress("support@timebooker.se", "Support"),
                         Subject = message.Subject,
+                        PlainTextContent = text,
+                        HtmlContent = html
                     };
-                    messageToSend.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(text, null, MediaTypeNames.Text.Plain));
-                    messageToSend.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(html, null, MediaTypeNames.Text.Html));
-                    client.Send(messageToSend);
+                    msg.AddTo(message.Destination);
+                    response = await gridClient.SendEmailAsync(msg);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.Write(e.InnerException);
+                HttpContext.Current.Response.Write(ex.Message + "Email Response:" + response);
             }
-            return Task.FromResult(0);
         }
     }
 }
