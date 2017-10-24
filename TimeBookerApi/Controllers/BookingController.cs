@@ -109,16 +109,19 @@ namespace TimeBookerApi.Controllers
                 {
                     using (var con = new BookingContext())
                     {
-                        var bookingToReplace = con.Bookings.Where(b => b.Id == booking.Id).FirstOrDefault();
+                        var bookingToSwitch = con.Bookings.Where(b => b.Id == booking.Id).FirstOrDefault();
 
-                        if (bookingToReplace != null)
+                        if (bookingToSwitch != null)
                         {
-                            bookingToReplace.Location = booking.Location;
-                            bookingToReplace.Title = booking.Title;
-                            bookingToReplace.Details = booking.Details;
-                            bookingToReplace.From = booking.From;
-                            bookingToReplace.To = booking.To;
-                            bookingToReplace.UserName = booking.UserName;
+                            con.Bookings.Remove(bookingToSwitch);
+                            bookingToSwitch.Id = booking.Id;
+                            bookingToSwitch.Location = booking.Location;
+                            bookingToSwitch.Title = booking.Title;
+                            bookingToSwitch.Details = booking.Details;
+                            bookingToSwitch.From = booking.From;
+                            bookingToSwitch.To = booking.To;
+                            bookingToSwitch.UserName = booking.UserName;
+                            con.Bookings.Add(bookingToSwitch);
                             con.SaveChanges();
                         }
                         else
