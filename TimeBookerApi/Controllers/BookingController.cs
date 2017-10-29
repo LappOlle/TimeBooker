@@ -73,9 +73,8 @@ namespace TimeBookerApi.Controllers
 
             try
             {
-                if (booking.UserName != null && HttpContext.Current.User.IsInRole("Admin"))
+                if (!String.IsNullOrEmpty(booking.UserName) && HttpContext.Current.User.IsInRole("Admin"))
                 {
-
                     using (var con = new BookingContext())
                     {
                         con.Bookings.Add(booking);
