@@ -21,14 +21,14 @@ namespace TimeBookerApi
         public void Configuration(IAppBuilder app)
         {
             ConfigureOAuth(app);
-
+            
             /*This HttpConfiguration config is used to configure API routes. 
              * We will pass this object to method Register in WebApiConfig class.*/
             HttpConfiguration config = new HttpConfiguration();
 
             //Here we passing it.
             WebApiConfig.Register(config);
-
+          
             //Adding this so we accept request from any origin not only the front-end "if I had one". Cross Origin Resource Sharing
             app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
 

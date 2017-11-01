@@ -19,6 +19,7 @@ namespace TimeBookerApi.Controllers
         [HttpGet]
         public IHttpActionResult Get()
         {
+            
             var requestingUsername = HttpContext.Current.User.Identity.Name;//We take the username from the token.
 
             if (ModelState.IsValid)
