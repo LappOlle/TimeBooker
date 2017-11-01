@@ -35,6 +35,8 @@ namespace TimeBookerApi
             /*This UseWebApi is an interface that will be used by the server when 
              * we wire up ASP.NET Web API to our Owin server pipeline*/
             app.UseWebApi(config);
+
+            app.MapSignalR();
         }
 
         public void ConfigureOAuth(IAppBuilder app)

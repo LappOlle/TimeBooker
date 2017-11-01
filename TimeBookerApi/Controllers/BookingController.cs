@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web;
+using TimeBookerApi.Hubs;
 
 namespace TimeBookerApi.Controllers
 {
@@ -96,6 +97,7 @@ namespace TimeBookerApi.Controllers
             {
                 return InternalServerError();
             }
+            MyHub.RequestUpdate();
             return Ok("You have successfully saved the booking.");
         }
 
@@ -139,6 +141,7 @@ namespace TimeBookerApi.Controllers
             {
                 return BadRequest(ModelState);
             }
+            MyHub.RequestUpdate();
             return Ok("You have successfully changed the booking.");
         }
 
@@ -171,6 +174,7 @@ namespace TimeBookerApi.Controllers
             {
                 return InternalServerError();
             }
+            MyHub.RequestUpdate();
             return Ok("You have successfully deleted the booking.");
         }
 
